@@ -3,7 +3,7 @@
 # Script to build and run the FSWatcher docker container
 
 # Get variables
-source fswatcher.config
+source s3watcher.config
 
 # Verify that the directory to be watched exists
 if [ ! -d "$DOWNLOAD_DIR" ]; then

@@ -3,7 +3,7 @@
 # Script to stop FSWatcher docker container
 
 # Get variables
-source fswatcher.config
+source s3watcher.config
 
 # Stop the docker container if it is already running
 if [ "$(docker ps | grep $CONTAINER_NAME)" ]; then

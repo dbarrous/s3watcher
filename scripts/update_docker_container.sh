@@ -3,7 +3,7 @@
 # Script to update the FSWatcher docker container with the latest version of the code from the repo https://github.com/HERMES-SOC/fswatcher
 
 # Get variables
-source fswatcher.config
+source s3watcher.config
 
 # Perform a git pull to get the latest version of the code
 git pull
