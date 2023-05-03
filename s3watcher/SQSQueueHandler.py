@@ -1,6 +1,7 @@
 import os
 import time
 import polling
+import json
 import boto3
 import boto3.s3.transfer as s3transfer
 import botocore
@@ -410,3 +411,69 @@ class SQSQueueHandler:
             log.error(
                 {"status": "ERROR", "message": f"Error logging to Timestream: {e}"}
             )
+
+    def setup(self):
+        queue_name = self.queue_name
+        bucket_name = self.bucket_name
+
+        folder = self.extract_folder_from_bucket_name(self.bucket_name)
+
+        queue = self.create_sqs_queue(queue_name)
+        self.add_permissions_to_sqs(queue, bucket_name)
+        self.configure_s3_bucket_events(bucket_name, folder, queue)
+
+        print(
+            f"SQS queue '{queue_name}' is now configured to receive events from S3 bucket '{bucket_name}' with prefix '{folder}'."
+        )
+
+    @staticmethod
+    def create_sqs_queue(queue_name):
+        sqs = boto3.resource("sqs")
+        try:
+            queue = sqs.create_queue(QueueName=queue_name)
+        except sqs.exceptions.QueueNameExists:
+            queue = sqs.get_queue_by_name(QueueName=queue_name)
+        return queue
+
+    @staticmethod
+    def add_permissions_to_sqs(queue, bucket_name):
+        queue_policy = {
+            "Version": "2012-10-17",
+            "Id": "S3EventsPolicy",
+            "Statement": [
+                {
+                    "Sid": "S3Events",
+                    "Effect": "Allow",
+                    "Principal": {"AWS": "*"},
+                    "Action": "sqs:SendMessage",
+                    "Resource": queue.attributes["QueueArn"],
+                    "Condition": {
+                        "ArnLike": {"aws:SourceArn": f"arn:aws:s3:::{bucket_name}"}
+                    },
+                }
+            ],
+        }
+        queue.set_attributes(Attributes={"Policy": json.dumps(queue_policy)})
+
+    @staticmethod
+    def configure_s3_bucket_events(bucket_name, folder, queue):
+        s3 = boto3.client("s3")
+        events_config = {
+            "QueueConfigurations": [
+                {
+                    "Id": f"{bucket_name}-{folder}-events",
+                    "QueueArn": queue.attributes["QueueArn"],
+                    "Events": ["s3:ObjectCreated:*"],
+                    "Filter": {
+                        "Key": {"FilterRules": [{"Name": "prefix", "Value": folder}]}
+                    },
+                }
+            ]
+        }
+        s3.put_bucket_notification_configuration(
+            Bucket=bucket_name, NotificationConfiguration=events_config
+        )
+
+    @staticmethod
+    def extract_folder_from_bucket_name(bucket_name):
+        return bucket_name.split("-", 1)[-1] + "/"

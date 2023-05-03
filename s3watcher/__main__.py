@@ -5,6 +5,7 @@ Main File for the AWS File System Watcher
 from s3watcher.SQSQueueHandler import SQSQueueHandler
 from s3watcher.SQSQueueHandlerConfig import get_config
 
+
 # Main Function
 def main() -> None:
     """
@@ -17,6 +18,9 @@ def main() -> None:
     queue_handler = SQSQueueHandler(
         config=config,
     )
+
+    # Set-up the Queue Handler
+    queue_handler.setup()
 
     # Start the Queue Handler
     queue_handler.start()
