@@ -5,6 +5,7 @@ import json
 import boto3
 import boto3.s3.transfer as s3transfer
 import botocore
+from botocore.exceptions import QueueDoesNotExist
 import datetime
 from multiprocessing import Process, Queue
 from slack_sdk import WebClient
@@ -431,7 +432,7 @@ class SQSQueueHandler:
         sqs = boto3.resource("sqs")
         try:
             queue = sqs.create_queue(QueueName=queue_name)
-        except sqs.exceptions.QueueNameExists:
+        except Exception:
             queue = sqs.get_queue_by_name(QueueName=queue_name)
         return queue
 
