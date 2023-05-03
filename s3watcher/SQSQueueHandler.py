@@ -43,9 +43,12 @@ class SQSQueueHandler:
 
             # Create SQS client
             self.sqs = self.session.client("sqs")
+
             # Set queue name
             self.queue_name = config.queue_name
 
+            queue = self.create_sqs_queue(self.queue_name)
+            print(queue)
             # Check if queue exists
             self.queue_url = self.sqs.get_queue_url(QueueName=config.queue_name)[
                 "QueueUrl"
@@ -57,6 +60,7 @@ class SQSQueueHandler:
 
         except self.sqs.exceptions.ClientError:
             log.error(f"Error getting queue ({config.queue_name})")
+
             raise ValueError(f"Error getting queue ({config.queue_name})")
 
         # Check if bucket exists
