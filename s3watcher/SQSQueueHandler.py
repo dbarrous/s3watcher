@@ -5,7 +5,6 @@ import json
 import boto3
 import boto3.s3.transfer as s3transfer
 import botocore
-from botocore.exceptions import QueueDoesNotExist
 import datetime
 from multiprocessing import Process, Queue
 from slack_sdk import WebClient
