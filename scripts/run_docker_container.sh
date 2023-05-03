@@ -6,8 +6,8 @@
 source fswatcher.config
 
 # Verify that the directory to be watched exists
-if [ ! -d "$WATCH_DIR" ]; then
-    echo "Directory $WATCH_DIR does not exist"
+if [ ! -d "$DOWNLOAD_DIR" ]; then
+    echo "Directory $DOWNLOAD_DIR does not exist"
     exit 1
 fi
 
