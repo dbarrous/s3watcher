@@ -18,13 +18,11 @@ Utility functions for s3watcher.
 
 
 class SQSQueueHandler:
-
     event_queue = Queue()
     event_history = []
     event_history_limit = 100000
 
     def __init__(self, config: SQSQueueHandlerConfig) -> None:
-
         # Set download path
         self.download_path = (
             config.path if config.path.endswith("/") else config.path + "/"
@@ -57,7 +55,6 @@ class SQSQueueHandler:
             raise ValueError(f"Error getting queue ({config.queue_name})")
 
         except self.sqs.exceptions.ClientError:
-
             log.error(f"Error getting queue ({config.queue_name})")
             raise ValueError(f"Error getting queue ({config.queue_name})")
 
@@ -82,7 +79,6 @@ class SQSQueueHandler:
             self.s3t = s3transfer.create_transfer_manager(s3client, transfer_config)
 
         except self.s3.exceptions.ClientError:
-
             log.error(f"Error getting bucket ({self.bucket_name})")
             raise ValueError(f"Error getting bucket ({self.bucket_name})")
 
@@ -125,7 +121,6 @@ class SQSQueueHandler:
             messages = response.get("Messages")
 
             if messages is not None:
-
                 # Queue messages
                 sqs_events = self.queue_messages(messages)
 
@@ -134,7 +129,6 @@ class SQSQueueHandler:
             return None
 
         except Exception as e:
-
             log.error(f"Error getting messages from queue ({self.queue_url}): {e}")
 
     def queue_messages(self, messages: list):
@@ -209,11 +203,39 @@ class SQSQueueHandler:
         Function to process batch of sqs events.
         """
 
+        check_s3 = True
         while True:
-
             event = self.event_queue.get()
 
             if event is None:
+                if check_s3:
+                    # Get all keys in bucket
+                    keys = []
+                    try:
+                        response = self.s3.list_objects_v2(Bucket=self.bucket_name)
+                        keys = [obj["Key"] for obj in response["Contents"]]
+                    except Exception as e:
+                        log.error(
+                            f"Error getting keys from bucket ({self.bucket_name}): {e}"
+                        )
+
+                    # Get all keys in download path
+                    downloaded_keys = []
+                    for root, _, files in os.walk(self.download_path):
+                        for file in files:
+                            downloaded_keys.append(os.path.join(root, file))
+
+                    # Get all keys in the s3 bucket that are not in the download path
+                    keys_to_download = list(set(keys) - set(downloaded_keys))
+
+                    # log all keys
+                    log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
+                    log.info(f"Keys in download path ({self.download_path}): {keys}")
+                    log.info(
+                        f"Keys to download ({self.bucket_name}): {keys_to_download}"
+                    )
+                    check_s3 = False
+
                 return
 
             self.process_message(event)
@@ -265,7 +287,6 @@ class SQSQueueHandler:
         p2.start()
 
     def poll(self):
-
         log.info(f"Polling for messages on queue ({self.queue_name})")
 
         while True:
