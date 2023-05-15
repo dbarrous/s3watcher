@@ -19,11 +19,8 @@ def main() -> None:
         config=config,
     )
 
-    # Set-up the Queue Handler
-    queue_handler.setup()
-
     # Start the Queue Handler
-    # queue_handler.start()
+    queue_handler.start()
 
 
 # Main Function
