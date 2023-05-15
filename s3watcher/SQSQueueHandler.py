@@ -68,11 +68,11 @@ class SQSQueueHandler:
             # Create S3 client
             self.s3 = self.session.client("s3")
 
+            self.bucket_name, self.folder = self.extract_folder_from_bucket_name(
+                config.bucket_name
+            )
             # Check if bucket exists
-            self.s3.head_bucket(Bucket=config.bucket_name)
-
-            # Set bucket name
-            self.bucket_name = config.bucket_name
+            self.s3.head_bucket(Bucket=self.bucket_name)
 
             # Initialize S3 Transfer Manager with concurrency limit
             botocore_config = botocore.config.Config(max_pool_connections=10)
@@ -417,16 +417,12 @@ class SQSQueueHandler:
             )
 
     def setup(self):
-        queue_name = self.queue_name
-
-        bucket_name, folder = self.extract_folder_from_bucket_name(self.bucket_name)
-
-        queue = self.create_sqs_queue(queue_name)
-        self.add_permissions_to_sqs(queue, bucket_name)
-        self.configure_s3_bucket_events(bucket_name, folder, queue)
+        queue = self.create_sqs_queue(self.queue_name)
+        self.add_permissions_to_sqs(queue, self.bucket_name)
+        self.configure_s3_bucket_events(self.bucket_name, self.folder, queue)
 
         print(
-            f"SQS queue '{queue_name}' is now configured to receive events from S3 bucket '{bucket_name}' with prefix '{folder}'."
+            f"SQS queue '{self.queue_name}' is now configured to receive events from S3 bucket '{self.bucket_name}' with prefix '{self.folder}'."
         )
 
     @staticmethod
