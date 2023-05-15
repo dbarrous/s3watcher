@@ -463,7 +463,6 @@ class SQSQueueHandler:
     def configure_s3_bucket_events(bucket_name, folder, queue):
         if folder.endswith("/"):
             folder = folder[:-1]
-            print(f"Removing trailing slash from folder name: {folder}")
 
         s3 = boto3.client("s3")
         events_config = {
@@ -472,9 +471,8 @@ class SQSQueueHandler:
                     "Id": f"{bucket_name}-{folder}-events",
                     "QueueArn": queue.attributes["QueueArn"],
                     "Events": [
-                        "s3:ObjectCreated:COPY",
-                        "s3:ObjectCreated:PUT",
-                        "s3:ObjectRemoved:DELETE",
+                        "s3:ObjectCreated:*",
+                        "s3:ObjectRemoved:*",
                     ],
                     "Filter": {
                         "Key": {"FilterRules": [{"Name": "prefix", "Value": folder}]}
