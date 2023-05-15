@@ -467,7 +467,6 @@ class SQSQueueHandler:
                     "QueueArn": queue.attributes["QueueArn"],
                     "Events": [
                         "s3:ObjectCreated:*",
-                        "s3:ObjectRemoved:*",
                     ],
                     "Filter": {
                         "Key": {"FilterRules": [{"Name": "prefix", "Value": folder}]}
