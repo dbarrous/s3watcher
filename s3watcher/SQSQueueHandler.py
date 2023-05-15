@@ -474,7 +474,7 @@ class SQSQueueHandler:
                     "Events": [
                         "s3:ObjectCreated:COPY",
                         "s3:ObjectCreated:PUT",
-                        "s3:ObjectRemoved:Delete",
+                        "s3:ObjectRemoved:DELETE",
                     ],
                     "Filter": {
                         "Key": {"FilterRules": [{"Name": "prefix", "Value": folder}]}
