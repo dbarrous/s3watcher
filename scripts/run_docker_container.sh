@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# Script to build and run the FSWatcher docker container
+# Script to build and run the S3Watcher docker container
 
 # Get variables
 source s3watcher.config
@@ -106,29 +106,6 @@ echo "TEST_IAM_POLICY: $TEST_IAM_POLICY"
 echo "BACKTRACK: $BACKTRACK"
 echo "BACKTRACK_DATE: $BACKTRACK_DATE"
 echo "USE_FALLBACK: $USE_FALLBACK"
-
-# Run the docker container in detached mode
-# docker run -d \
-#     --name $CONTAINER_NAME \
-#     -e SDC_AWS_S3_BUCKET="$SDC_AWS_S3_BUCKET" \
-#     -e SDC_AWS_CONCURRENCY_LIMIT="$SDC_AWS_CONCURRENCY_LIMIT" \
-#     -e SDC_AWS_TIMESTREAM_DB="$SDC_AWS_TIMESTREAM_DB" \
-#     -e SDC_AWS_TIMESTREAM_TABLE="$SDC_AWS_TIMESTREAM_TABLE" \
-#     -e SDC_AWS_SLACK_TOKEN="$SDC_AWS_SLACK_TOKEN" \
-#     -e SDC_AWS_SLACK_CHANNEL="$SDC_AWS_SLACK_CHANNEL" \
-#     -e SDC_AWS_ALLOW_DELETE="$SDC_AWS_ALLOW_DELETE" \
-#     -e SDC_AWS_BACKTRACK="$SDC_AWS_BACKTRACK" \
-#     -e SDC_AWS_BACKTRACK_DATE="$SDC_AWS_BACKTRACK_DATE" \
-#     -e AWS_REGION="$AWS_REGION" \
-#     -e FILE_LOGGING="$FILE_LOGGING" \
-#     -e CHECK_S3="$CHECK_S3" \
-#     -e BOTO3_LOGGING="$BOTO3_LOGGING" \
-#     -e TEST_IAM_POLICY="$TEST_IAM_POLICY" \
-#     -e USE_FALLBACK="$USE_FALLBACK" \
-#     -v /etc/passwd:/etc/passwd \
-#     -v $WATCH_DIR:/watch \
-#     -v ${HOME}/.aws/credentials:/root/.aws/credentials:ro \
-#     $IMAGE_NAME
 
 
 docker run -d \

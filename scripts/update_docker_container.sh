@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# Script to update the FSWatcher docker container with the latest version of the code from the repo https://github.com/HERMES-SOC/fswatcher
+# Script to update the S3Watcher docker container with the latest version of the code from the repo https://github.com/HERMES-SOC/s3watcher
 
 # Get variables
 source s3watcher.config

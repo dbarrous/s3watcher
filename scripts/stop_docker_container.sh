@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# Script to stop FSWatcher docker container
+# Script to stop S3Watcher docker container
 
 # Get variables
 source s3watcher.config
