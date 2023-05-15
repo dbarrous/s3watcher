@@ -418,9 +418,8 @@ class SQSQueueHandler:
 
     def setup(self):
         queue_name = self.queue_name
-        bucket_name = self.bucket_name
 
-        folder = self.extract_folder_from_bucket_name(self.bucket_name)
+        bucket_name, folder = self.extract_folder_from_bucket_name(self.bucket_name)
 
         queue = self.create_sqs_queue(queue_name)
         self.add_permissions_to_sqs(queue, bucket_name)
@@ -487,9 +486,9 @@ class SQSQueueHandler:
     @staticmethod
     def extract_folder_from_bucket_name(bucket_name):
         if "/" not in bucket_name:
-            return ""
+            return bucket_name, ""
 
         if len(bucket_name.split("/") > 2):
-            return ""
+            return bucket_name.replace("/", "", 1), ""
 
-        return bucket_name.split("/", 1)[-1]
+        return bucket_name.split("/", 1)[0], bucket_name.split("/", 1)[-1]
