@@ -486,4 +486,4 @@ class SQSQueueHandler:
 
     @staticmethod
     def extract_folder_from_bucket_name(bucket_name):
-        return bucket_name.split("-", 1)[-1] + "/"
+        return bucket_name.split("/", 1)[-1]
