@@ -489,7 +489,7 @@ class SQSQueueHandler:
         if "/" not in bucket_name:
             return ""
 
-        if len(bucket_name.split("/", 1)[-1]) == 0:
+        if len(bucket_name.split("/") > 2):
             return ""
 
         return bucket_name.split("/", 1)[-1]
