@@ -209,17 +209,22 @@ class SQSQueueHandler:
                 try:
                     # with pagination with folder prefix
                     paginator = self.s3.get_paginator("list_objects_v2")
-
+                    if self.folder not in [None, ""]:
+                        prefix = f"{self.folder}/"
+                    else:
+                        prefix = None
                     page_iterator = paginator.paginate(
-                        Bucket=self.bucket_name, Prefix=f"{self.folder}/"
+                        Bucket=self.bucket_name, Prefix=prefix
                     )
                     for page in page_iterator:
                         if "Contents" in page:
                             for key in page["Contents"]:
                                 # remove the first /folder/ from the key
-                                key["Key"] = key["Key"].replace(
-                                    f"{self.folder}/", "", 1
-                                )
+                                if self.folder not in [None, ""]:
+                                    key["Key"] = key["Key"].replace(
+                                        f"{self.folder}/", "", 1
+                                    )
+
                                 if key["Key"] != "":
                                     keys.append(key["Key"])
 
@@ -260,7 +265,8 @@ class SQSQueueHandler:
                 for key in keys_to_download:
                     # Download file from S3 Async
                     with concurrent.futures.ThreadPoolExecutor() as executor:
-                        key = f"{self.folder}/" + key
+                        if self.folder not in [None, ""]:
+                            key = f"{self.folder}/" + key
                         executor.submit(self.download_file_from_s3, key)
 
                 check_s3 = False
@@ -276,7 +282,8 @@ class SQSQueueHandler:
             # Loop through file_key and create directory if it does not exist
             download_file_key = file_key
             # Replace first /{folder}/ from file_key
-            file_key = file_key.replace(f"{self.folder}/", "", 1)
+            if self.folder not in [None, ""]:
+                file_key = file_key.replace(f"{self.folder}/", "", 1)
             file_key_split = file_key.split("/")
             for i in range(len(file_key_split) - 1):
                 self.create_directory(
