@@ -63,14 +63,14 @@ class SQSQueueHandler:
         #         "QueueUrl"
         #     ]
 
-        # except self.sqs.exceptions.QueueDoesNotExist:
-        #     log.error(f"Error getting queue ({config.queue_name})")
-        #     raise ValueError(f"Error getting queue ({config.queue_name})")
+        except self.sqs.exceptions.QueueDoesNotExist:
+            log.error(f"Error getting queue ({config.queue_name})")
+            raise ValueError(f"Error getting queue ({config.queue_name})")
 
-        # except self.sqs.exceptions.ClientError:
-        #     log.error(f"Error getting queue ({config.queue_name})")
+        except self.sqs.exceptions.ClientError:
+            log.error(f"Error getting queue ({config.queue_name})")
 
-        #     raise ValueError(f"Error getting queue ({config.queue_name})")
+            raise ValueError(f"Error getting queue ({config.queue_name})")
 
         # Check if bucket exists
         try:
