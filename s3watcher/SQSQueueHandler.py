@@ -274,6 +274,9 @@ class SQSQueueHandler:
         """
         try:
             # Loop through file_key and create directory if it does not exist
+            download_file_key = file_key
+            # Replace first /{folder}/ from file_key
+            file_key = file_key.replace(f"{self.folder}/", "", 1)
             file_key_split = file_key.split("/")
             for i in range(len(file_key_split) - 1):
                 self.create_directory(
@@ -283,12 +286,9 @@ class SQSQueueHandler:
             # Download file from S3
             self.s3t.download_file(
                 self.bucket_name,
-                self.folder + file_key,
+                download_file_key,
                 self.download_path + file_key,
             )
-
-            # Remove first /{folder}/ from file_key
-            file_key = file_key.replace(f"{self.folder}/", "", 1)
 
             # Change file permissions
             os.chown(self.download_path + file_key, self.user[0], self.user[1])
