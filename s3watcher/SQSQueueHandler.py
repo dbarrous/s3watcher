@@ -260,6 +260,7 @@ class SQSQueueHandler:
                 for key in keys_to_download:
                     # Download file from S3 Async
                     with concurrent.futures.ThreadPoolExecutor() as executor:
+                        key = f"{self.folder}/" + key
                         executor.submit(self.download_file_from_s3, key)
 
                 check_s3 = False
