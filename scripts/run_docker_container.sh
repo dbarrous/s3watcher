@@ -128,11 +128,12 @@ docker run -d \
     -e SDC_AWS_TIMESTREAM_TABLE="$SDC_AWS_TIMESTREAM_TABLE" \
     -e SDC_AWS_SLACK_TOKEN="$SDC_AWS_SLACK_TOKEN" \
     -e SDC_AWS_SLACK_CHANNEL="$SDC_AWS_SLACK_CHANNEL" \
+    -e SDC_AWS_USER="$SDC_AWS_USER" \
     -e CHECK_S3="$CHECK_S3" \
     -v /etc/passwd:/etc/passwd \
     -v $DOWNLOAD_DIR:/download \
     -v ${HOME}/.aws/credentials:/s3watcher/.aws/credentials:ro \
-    -u  $SDC_AWS_USER \
+    -u  $(id -u):$(id -g) \
     $IMAGE_NAME
 # Print the docker logs
 echo "Docker logs"

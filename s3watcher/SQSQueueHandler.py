@@ -270,7 +270,7 @@ class SQSQueueHandler:
             )
 
             # Change file permissions
-            os.chown(self.download_path + file_key, 1001, 1001)
+            # os.chown(self.download_path + file_key, 1001, 1001)
 
             log.info(
                 f"Downloaded file ({file_key}) from S3 bucket ({self.bucket_name})"
