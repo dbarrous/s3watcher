@@ -7,6 +7,7 @@ from boto3.s3.transfer import TransferConfig, S3Transfer
 import botocore
 import datetime
 from multiprocessing import Process, Queue
+import concurrent.futures
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from s3watcher import log
@@ -249,7 +250,9 @@ class SQSQueueHandler:
                     f"Keys to download ({self.bucket_name}): {len(keys_to_download)}"
                 )
                 for key in keys_to_download:
-                    self.download_file_from_s3(key)
+                    # Download file from S3 Async
+                    with concurrent.futures.ThreadPoolExecutor() as executor:
+                        executor.submit(self.download_file_from_s3, key)
 
                 check_s3 = False
             event = self.event_queue.get()
