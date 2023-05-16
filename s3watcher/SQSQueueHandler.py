@@ -210,7 +210,6 @@ class SQSQueueHandler:
                 try:
                     response = self.s3.list_objects_v2(Bucket=self.bucket_name)
                     keys = [obj["Key"] for obj in response["Contents"]]
-                    log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
                 except Exception as e:
                     log.error(
                         f"Error getting keys from bucket ({self.bucket_name}): {e}"
@@ -226,12 +225,12 @@ class SQSQueueHandler:
                 keys_to_download = list(set(keys) - set(downloaded_keys))
 
                 # log all keys
-                log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
-                log.info(f"Keys in download path ({self.download_path}): {keys}")
-                log.info(f"Keys to download ({self.bucket_name}): {keys_to_download}")
+                log.info(f"Keys in bucket ({self.bucket_name}): {len(keys)}")
+                log.info(f"Keys in download path ({self.download_path}): {len(keys)}")
+                log.info(
+                    f"Keys to download ({self.bucket_name}): {len(keys_to_download)}"
+                )
                 check_s3 = False
-
-            return
 
             self.process_message(event)
 
