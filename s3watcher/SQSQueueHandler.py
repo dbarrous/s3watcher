@@ -425,12 +425,11 @@ class SQSQueueHandler:
     def create_or_get_sqs_queue(self, queue_name):
         sqs = boto3.resource("sqs")
         try:
-            queue = sqs.create_queue(QueueName=queue_name)
-            log.info(f"Creating SQS Queue ({queue_name})")
-
-        except Exception:
             log.info(f"Queue ({queue_name}) already exists")
             queue = sqs.get_queue_by_name(QueueName=queue_name)
+        except Exception:
+            queue = sqs.create_queue(QueueName=queue_name)
+            log.info(f"Creating SQS Queue ({queue_name})")
         return queue
 
     @staticmethod
