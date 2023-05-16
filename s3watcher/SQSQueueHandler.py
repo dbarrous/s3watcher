@@ -57,6 +57,7 @@ class SQSQueueHandler:
         try:
             # Create S3 client
             self.s3 = self.session.client("s3")
+            self.sqs = self.session.resource("sqs")
 
             self.bucket_name, self.folder = self.extract_folder_from_bucket_name(
                 config.bucket_name
@@ -422,13 +423,13 @@ class SQSQueueHandler:
 
     @staticmethod
     def create_or_get_sqs_queue(queue_name):
-        sqs = boto3.resource("sqs")
         try:
+            queue = self.sqs.create_queue(QueueName=queue_name)
             log.info(f"Creating SQS Queue ({queue_name})")
-            queue = sqs.create_queue(QueueName=queue_name)
+
         except Exception:
             log.info(f"Queue ({queue_name}) already exists")
-            queue = sqs.get_queue_by_name(QueueName=queue_name)
+            queue = self.sqs.get_queue_by_name(QueueName=queue_name)
         return queue
 
     @staticmethod
