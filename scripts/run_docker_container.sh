@@ -133,7 +133,6 @@ sudo docker run -d \
     -v /etc/passwd:/etc/passwd \
     -v $DOWNLOAD_DIR:/download \
     -v ${HOME}/.aws/credentials:/s3watcher/.aws/credentials:ro \
-    -u  $(id -u):$(id -g) \
     $IMAGE_NAME
 # Print the docker logs
 echo "Docker logs"
