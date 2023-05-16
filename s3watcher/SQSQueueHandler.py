@@ -211,7 +211,7 @@ class SQSQueueHandler:
                     paginator = self.s3.get_paginator("list_objects_v2")
 
                     page_iterator = paginator.paginate(
-                        Bucket=self.bucket_name, Prefix=self.folder
+                        Bucket=self.bucket_name, Prefix=f"{self.folder}/"
                     )
                     for page in page_iterator:
                         if "Contents" in page:
