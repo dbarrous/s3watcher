@@ -220,6 +220,11 @@ class SQSQueueHandler:
                 for root, _, files in os.walk(self.download_path):
                     for file in files:
                         downloaded_keys.append(os.path.join(root, file))
+                        # remove the first /download/ from the path
+                        downloaded_keys = [
+                            key.replace(self.download_path, "", 1)
+                            for key in downloaded_keys
+                        ]
 
                 # Get all keys in the s3 bucket that are not in the download path
                 keys_to_download = list(set(keys) - set(downloaded_keys))
