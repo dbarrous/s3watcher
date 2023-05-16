@@ -119,7 +119,7 @@ echo "BACKTRACK_DATE: $BACKTRACK_DATE"
 echo "USE_FALLBACK: $USE_FALLBACK"
 
 
-docker run -d \
+sudo docker run -d \
     --restart=always \
     --name=$CONTAINER_NAME \
     -e SDC_AWS_S3_BUCKET="$SDC_AWS_S3_BUCKET" \
