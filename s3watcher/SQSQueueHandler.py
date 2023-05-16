@@ -430,7 +430,7 @@ class SQSQueueHandler:
             log.info(f"Queue ({queue_name}) already exists")
             return queue
         except Exception:
-            if os.getenv("AWS_SDC_SETUP") == "true":
+            if os.getenv("SDC_AWS_SETUP") == "true":
                 queue = sqs.create_queue(QueueName=queue_name)
                 log.info(f"Creating SQS Queue ({queue_name})")
                 return queue

@@ -20,7 +20,7 @@ def main() -> None:
     )
 
     # Set-up the Queue Handler
-    if os.getenv("AWS_SDC_SETUP") == "true":
+    if os.getenv("SDC_AWS_SETUP") == "true":
         queue_handler.setup()
 
     # Start the Queue Handler
