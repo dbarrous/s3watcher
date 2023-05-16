@@ -39,9 +39,9 @@ class SQSQueueHandler:
             else boto3.session.Session(region=os.getenv("AWS_REGION"))
         )
 
-        self.sqs = self.session.resource("sqs")
+        self.sqs = self.session.client("sqs")
 
-        # Set queue name
+        # Set queue nameZZ
         self.queue_name = config.queue_name
 
         if ":" in os.getenv("SDC_AWS_USER"):
@@ -423,13 +423,14 @@ class SQSQueueHandler:
         )
 
     def create_or_get_sqs_queue(self, queue_name):
+        sqs = boto3.resource("sqs")
         try:
-            queue = self.sqs.create_queue(QueueName=queue_name)
+            queue = sqs.create_queue(QueueName=queue_name)
             log.info(f"Creating SQS Queue ({queue_name})")
 
         except Exception:
             log.info(f"Queue ({queue_name}) already exists")
-            queue = self.sqs.get_queue_by_name(QueueName=queue_name)
+            queue = sqs.get_queue_by_name(QueueName=queue_name)
         return queue
 
     @staticmethod
