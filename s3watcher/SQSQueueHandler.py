@@ -257,20 +257,15 @@ class SQSQueueHandler:
                     self.download_path + "/".join(file_key_split[: i + 1])
                 )
 
-            def download_completed(bytes_transferred, future):
-                if future.done():
-                    log.info(f"Download completed {bytes_transferred}")
-
             # Download file from S3
             self.s3t.download_file(
                 self.bucket_name,
                 file_key,
                 self.download_path + file_key,
-                callback=download_completed,
             )
 
             # Change file permissions
-            # os.chown(self.download_path + file_key, 1001, 1001)
+            os.chown(self.download_path + file_key, 1001, 1001)
 
             log.info(
                 f"Downloaded file ({file_key}) from S3 bucket ({self.bucket_name})"
