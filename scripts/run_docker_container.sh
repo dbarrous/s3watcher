@@ -45,6 +45,7 @@ unset SDC_AWS_SLACK_TOKEN
 unset SDC_AWS_SLACK_CHANNEL
 unset SDC_AWS_ALLOW_DELETE
 unset SDC_AWS_USER
+unset SDC_AWS_SETUP
 
 
 # Docker environment variables
@@ -97,6 +98,13 @@ else
     SDC_AWS_ALLOW_DELETE=""
 fi
 
+# If SETUP is true, then add it to the environment variables else make it empty
+if [ "$SETUP" = true ]; then
+    SDC_AWS_SETUP="true"
+else
+    SDC_AWS_SETUP=""
+fi
+
 
 # Print all the environment variables
 echo "Passed Arguments:"
@@ -129,6 +137,7 @@ docker run -d \
     -e SDC_AWS_SLACK_TOKEN="$SDC_AWS_SLACK_TOKEN" \
     -e SDC_AWS_SLACK_CHANNEL="$SDC_AWS_SLACK_CHANNEL" \
     -e SDC_AWS_USER="$SDC_AWS_USER" \
+    -e SDC_AWS_SETUP="$SDC_AWS_SETUP" \
     -e CHECK_S3="$CHECK_S3" \
     -v /etc/passwd:/etc/passwd \
     -v $DOWNLOAD_DIR:/download \

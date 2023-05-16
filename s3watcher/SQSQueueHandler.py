@@ -41,7 +41,7 @@ class SQSQueueHandler:
 
         self.sqs = self.session.client("sqs")
 
-        # Set queue nameZZ
+        # Set queue name
         self.queue_name = config.queue_name
 
         if ":" in os.getenv("SDC_AWS_USER"):
@@ -85,8 +85,10 @@ class SQSQueueHandler:
 
         try:
             # Initialize the slack client
-            self.slack_client = WebClient(token=config.slack_token)
-
+            if config.slack_token != "":
+                self.slack_client = WebClient(token=config.slack_token)
+            else:
+                self.slack_client = None
             # Initialize the slack channel
             self.slack_channel = config.slack_channel
 
@@ -427,7 +429,7 @@ class SQSQueueHandler:
             log.info(f"Queue ({queue_name}) already exists")
             queue = sqs.get_queue_by_name(QueueName=queue_name)
         except Exception:
-            if os.getenv("AWS_SDC_SETUP"):
+            if os.getenv("AWS_SDC_SETUP") == "true":
                 queue = sqs.create_queue(QueueName=queue_name)
                 log.info(f"Creating SQS Queue ({queue_name})")
         return queue
