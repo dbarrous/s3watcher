@@ -207,9 +207,12 @@ class SQSQueueHandler:
                 # Get all keys in bucket
                 keys = []
                 try:
-                    # with pagination
+                    # with pagination with folder prefix
                     paginator = self.s3.get_paginator("list_objects_v2")
-                    page_iterator = paginator.paginate(Bucket=self.bucket_name)
+
+                    page_iterator = paginator.paginate(
+                        Bucket=self.bucket_name, Prefix=self.folder
+                    )
                     for page in page_iterator:
                         if "Contents" in page:
                             for key in page["Contents"]:
