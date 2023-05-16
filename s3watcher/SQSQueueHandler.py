@@ -278,6 +278,9 @@ class SQSQueueHandler:
                 self.download_path + file_key,
             )
 
+            # Remove first /{folder}/ from file_key
+            file_key = file_key.replace(f"{self.folder}/", "", 1)
+
             # Change file permissions
             os.chown(self.download_path + file_key, self.user[0], self.user[1])
 
