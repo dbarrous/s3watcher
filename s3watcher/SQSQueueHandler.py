@@ -426,13 +426,18 @@ class SQSQueueHandler:
     def create_or_get_sqs_queue(self, queue_name):
         sqs = boto3.resource("sqs")
         try:
-            log.info(f"Queue ({queue_name}) already exists")
             queue = sqs.get_queue_by_name(QueueName=queue_name)
+            log.info(f"Queue ({queue_name}) already exists")
+            return queue
         except Exception:
             if os.getenv("AWS_SDC_SETUP") == "true":
                 queue = sqs.create_queue(QueueName=queue_name)
                 log.info(f"Creating SQS Queue ({queue_name})")
-        return queue
+                return queue
+            else:
+                raise Exception(
+                    f"Queue ({queue_name}) does not exist. Please pass SDC_AWS_SETUP as 'true' as an environment variable to automatically set it up."
+                )
 
     @staticmethod
     def add_permissions_to_sqs(queue, bucket_name):
