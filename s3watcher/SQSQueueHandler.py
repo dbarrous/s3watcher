@@ -49,6 +49,8 @@ class SQSQueueHandler:
 
             if ":" in os.getenv("SDC_AWS_USER"):
                 self.user = os.getenv("SDC_AWS_USER").split(":")
+                # convert to int
+                self.user = [int(i) for i in self.user]
             else:
                 self.user = [1000, 1000]
 
