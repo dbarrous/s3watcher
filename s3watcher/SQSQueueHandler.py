@@ -204,37 +204,34 @@ class SQSQueueHandler:
         while True:
             event = self.event_queue.get()
             log.info(f"Processing event: {event.message_id}")
-            if event is None:
-                if check_s3:
-                    # Get all keys in bucket
-                    keys = []
-                    try:
-                        response = self.s3.list_objects_v2(Bucket=self.bucket_name)
-                        keys = [obj["Key"] for obj in response["Contents"]]
-                        log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
-                    except Exception as e:
-                        log.error(
-                            f"Error getting keys from bucket ({self.bucket_name}): {e}"
-                        )
-
-                    # Get all keys in download path
-                    downloaded_keys = []
-                    for root, _, files in os.walk(self.download_path):
-                        for file in files:
-                            downloaded_keys.append(os.path.join(root, file))
-
-                    # Get all keys in the s3 bucket that are not in the download path
-                    keys_to_download = list(set(keys) - set(downloaded_keys))
-
-                    # log all keys
+            if check_s3:
+                # Get all keys in bucket
+                keys = []
+                try:
+                    response = self.s3.list_objects_v2(Bucket=self.bucket_name)
+                    keys = [obj["Key"] for obj in response["Contents"]]
                     log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
-                    log.info(f"Keys in download path ({self.download_path}): {keys}")
-                    log.info(
-                        f"Keys to download ({self.bucket_name}): {keys_to_download}"
+                except Exception as e:
+                    log.error(
+                        f"Error getting keys from bucket ({self.bucket_name}): {e}"
                     )
-                    check_s3 = False
 
-                return
+                # Get all keys in download path
+                downloaded_keys = []
+                for root, _, files in os.walk(self.download_path):
+                    for file in files:
+                        downloaded_keys.append(os.path.join(root, file))
+
+                # Get all keys in the s3 bucket that are not in the download path
+                keys_to_download = list(set(keys) - set(downloaded_keys))
+
+                # log all keys
+                log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
+                log.info(f"Keys in download path ({self.download_path}): {keys}")
+                log.info(f"Keys to download ({self.bucket_name}): {keys_to_download}")
+                check_s3 = False
+
+            return
 
             self.process_message(event)
 
