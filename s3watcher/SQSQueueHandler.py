@@ -32,45 +32,26 @@ class SQSQueueHandler:
         # Set concurrency limit
         self.concurrency_limit = config.concurrency_limit
 
-        # Check if queue exists
-        try:
-            # Initialize Boto3 Session
-            self.session = (
-                boto3.session.Session(profile_name=config.profile)
-                if config.profile != ""
-                else boto3.session.Session(region=os.getenv("AWS_REGION"))
-            )
+        # Initialize Boto3 Session
+        self.session = (
+            boto3.session.Session(profile_name=config.profile)
+            if config.profile != ""
+            else boto3.session.Session(region=os.getenv("AWS_REGION"))
+        )
 
-            # Create SQS client
-            self.sqs = self.session.client("sqs")
+        # Set queue name
+        self.queue_name = config.queue_name
 
-            # Set queue name
-            self.queue_name = config.queue_name
+        if ":" in os.getenv("SDC_AWS_USER"):
+            self.user = os.getenv("SDC_AWS_USER").split(":")
+            # convert to int
+            self.user = [int(i) for i in self.user]
+        else:
+            self.user = [1000, 1000]
 
-            if ":" in os.getenv("SDC_AWS_USER"):
-                self.user = os.getenv("SDC_AWS_USER").split(":")
-                # convert to int
-                self.user = [int(i) for i in self.user]
-            else:
-                self.user = [1000, 1000]
+        self.queue = self.create_or_get_sqs_queue(self.queue_name)
 
-            self.queue = self.create_sqs_queue(self.queue_name)
-
-            log.info(self.queue.url)
-
-        #     # Check if queue exists
-        #     self.queue_url = self.sqs.get_queue_url(QueueName=config.queue_name)[
-        #         "QueueUrl"
-        #     ]
-
-        except self.sqs.exceptions.QueueDoesNotExist:
-            log.error(f"Error getting queue ({config.queue_name})")
-            raise ValueError(f"Error getting queue ({config.queue_name})")
-
-        except self.sqs.exceptions.ClientError:
-            log.error(f"Error getting queue ({config.queue_name})")
-
-            raise ValueError(f"Error getting queue ({config.queue_name})")
+        self.queue_url = self.queue.url
 
         # Check if bucket exists
         try:
@@ -432,7 +413,7 @@ class SQSQueueHandler:
             )
 
     def setup(self):
-        queue = self.create_sqs_queue(self.queue_name)
+        queue = self.create_or_get_sqs_queue(self.queue_name)
         self.add_permissions_to_sqs(queue, self.bucket_name)
         self.configure_s3_bucket_events(self.bucket_name, self.folder, queue)
 
@@ -441,11 +422,13 @@ class SQSQueueHandler:
         )
 
     @staticmethod
-    def create_sqs_queue(queue_name):
+    def create_or_get_sqs_queue(queue_name):
         sqs = boto3.resource("sqs")
         try:
+            log.info(f"Creating SQS Queue ({queue_name})")
             queue = sqs.create_queue(QueueName=queue_name)
         except Exception:
+            log.info(f"Queue ({queue_name}) already exists")
             queue = sqs.get_queue_by_name(QueueName=queue_name)
         return queue
 
