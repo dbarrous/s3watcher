@@ -264,6 +264,8 @@ class SQSQueueHandler:
                 self.download_path + file_key,
             )
 
+            log.info(os.getenv("SDC_AWS_USER"))
+
             # Change file permissions
             os.chown(self.download_path + file_key, 1001, 1001)
 
