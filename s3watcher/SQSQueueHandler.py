@@ -413,9 +413,8 @@ class SQSQueueHandler:
             )
 
     def setup(self):
-        queue = self.create_or_get_sqs_queue(self.queue_name)
-        self.add_permissions_to_sqs(queue, self.bucket_name)
-        self.configure_s3_bucket_events(self.bucket_name, self.folder, queue)
+        self.add_permissions_to_sqs(self.queue, self.bucket_name)
+        self.configure_s3_bucket_events(self.bucket_name, self.folder, self.queue)
 
         print(
             f"SQS queue '{self.queue_name}' is now configured to receive events from S3 bucket '{self.bucket_name}' with prefix '{self.folder}'."
