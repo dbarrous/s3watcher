@@ -44,6 +44,7 @@ unset SDC_AWS_TIMESTREAM_TABLE
 unset SDC_AWS_SLACK_TOKEN
 unset SDC_AWS_SLACK_CHANNEL
 unset SDC_AWS_ALLOW_DELETE
+unset SDC_AWS_USER
 
 
 # Docker environment variables
@@ -86,9 +87,9 @@ fi
 if [ "$USER" != "" ]; then
     USER_ID=$(id -u $USER)
     GROUP_ID=$(id -g $USER)
-    USER="$USER_ID:$GROUP_ID"
+    SDC_AWS_USER="$USER_ID:$GROUP_ID"
 else
-    USER="$(id -u):$(id -g)"
+    SDC_AWS_USER="$(id -u):$(id -g)"
 fi
 
 # If ALLOW_DELETE is true, then add it to the environment variables else make it empty
@@ -132,7 +133,7 @@ docker run -d \
     -v /etc/passwd:/etc/passwd \
     -v $DOWNLOAD_DIR:/download \
     -v ${HOME}/.aws/credentials:/s3watcher/.aws/credentials:ro \
-    -u  $USER \
+    -u  $SDC_AWS_USER \
     $IMAGE_NAME
 # Print the docker logs
 echo "Docker logs"
