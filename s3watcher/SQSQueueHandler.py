@@ -421,8 +421,7 @@ class SQSQueueHandler:
             f"SQS queue '{self.queue_name}' is now configured to receive events from S3 bucket '{self.bucket_name}' with prefix '{self.folder}'."
         )
 
-    @staticmethod
-    def create_or_get_sqs_queue(queue_name):
+    def create_or_get_sqs_queue(self, queue_name):
         try:
             queue = self.sqs.create_queue(QueueName=queue_name)
             log.info(f"Creating SQS Queue ({queue_name})")
