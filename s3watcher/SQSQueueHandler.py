@@ -208,8 +208,14 @@ class SQSQueueHandler:
                 # Get all keys in bucket
                 keys = []
                 try:
-                    response = self.s3.list_objects_v2(Bucket=self.bucket_name)
-                    keys = [obj["Key"] for obj in response["Contents"]]
+                    # with pagination
+                    paginator = self.s3.get_paginator("list_objects_v2")
+                    page_iterator = paginator.paginate(Bucket=self.bucket_name)
+                    for page in page_iterator:
+                        if "Contents" in page:
+                            for key in page["Contents"]:
+                                keys.append(key["Key"])
+
                 except Exception as e:
                     log.error(
                         f"Error getting keys from bucket ({self.bucket_name}): {e}"
