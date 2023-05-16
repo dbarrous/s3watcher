@@ -56,7 +56,7 @@ class SQSQueueHandler:
 
             self.queue = self.create_sqs_queue(self.queue_name)
 
-            log.info(self.queue)
+            log.info(self.queue.url)
 
         #     # Check if queue exists
         #     self.queue_url = self.sqs.get_queue_url(QueueName=config.queue_name)[
