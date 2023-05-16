@@ -274,7 +274,6 @@ class SQSQueueHandler:
 
                 check_s3 = False
             event = self.event_queue.get()
-            log.info(f"Processing event: {event.message_id}")
             self.process_message(event)
 
     def download_file_from_s3(self, file_key: str):
