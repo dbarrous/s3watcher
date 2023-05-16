@@ -100,7 +100,6 @@ class SQSQueueHandler:
                     }
                 )
 
-        log.info(f"Queue ({self.queue_name}) found")
         log.info("S3Watcher initialized successfully")
 
     def get_messages(self, max_batch_size: int = 10) -> None:
