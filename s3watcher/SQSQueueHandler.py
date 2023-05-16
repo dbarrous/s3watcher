@@ -257,9 +257,8 @@ class SQSQueueHandler:
                     self.download_path + "/".join(file_key_split[: i + 1])
                 )
 
-            def download_completed(bytes_transferred):
-                print(f"Downloaded {bytes_transferred} bytes")
-                print("Download completed")
+            def download_completed():
+                log.info("Download completed")
 
             # Download file from S3
             self.s3t.download_file(
