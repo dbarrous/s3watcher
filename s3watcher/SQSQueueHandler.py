@@ -85,7 +85,7 @@ class SQSQueueHandler:
 
         try:
             # Initialize the slack client
-            if config.slack_token != "":
+            if config.slack_token:
                 self.slack_client = WebClient(token=config.slack_token)
             else:
                 self.slack_client = None
