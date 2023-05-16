@@ -203,7 +203,7 @@ class SQSQueueHandler:
         check_s3 = True
         while True:
             event = self.event_queue.get()
-
+            log.info(f"Processing event: {event.message_id}")
             if event is None:
                 if check_s3:
                     # Get all keys in bucket
@@ -211,6 +211,7 @@ class SQSQueueHandler:
                     try:
                         response = self.s3.list_objects_v2(Bucket=self.bucket_name)
                         keys = [obj["Key"] for obj in response["Contents"]]
+                        log.info(f"Keys in bucket ({self.bucket_name}): {keys}")
                     except Exception as e:
                         log.error(
                             f"Error getting keys from bucket ({self.bucket_name}): {e}"
