@@ -54,21 +54,23 @@ class SQSQueueHandler:
             else:
                 self.user = [1000, 1000]
 
-            queue = self.create_sqs_queue(self.queue_name)
-            print(queue)
-            # Check if queue exists
-            self.queue_url = self.sqs.get_queue_url(QueueName=config.queue_name)[
-                "QueueUrl"
-            ]
+            self.queue = self.create_sqs_queue(self.queue_name)
 
-        except self.sqs.exceptions.QueueDoesNotExist:
-            log.error(f"Error getting queue ({config.queue_name})")
-            raise ValueError(f"Error getting queue ({config.queue_name})")
+            log.info(self.queue)
 
-        except self.sqs.exceptions.ClientError:
-            log.error(f"Error getting queue ({config.queue_name})")
+        #     # Check if queue exists
+        #     self.queue_url = self.sqs.get_queue_url(QueueName=config.queue_name)[
+        #         "QueueUrl"
+        #     ]
 
-            raise ValueError(f"Error getting queue ({config.queue_name})")
+        # except self.sqs.exceptions.QueueDoesNotExist:
+        #     log.error(f"Error getting queue ({config.queue_name})")
+        #     raise ValueError(f"Error getting queue ({config.queue_name})")
+
+        # except self.sqs.exceptions.ClientError:
+        #     log.error(f"Error getting queue ({config.queue_name})")
+
+        #     raise ValueError(f"Error getting queue ({config.queue_name})")
 
         # Check if bucket exists
         try:
@@ -214,7 +216,6 @@ class SQSQueueHandler:
         """
         Function to process batch of sqs events.
         """
-
         check_s3 = True
         while True:
             event = self.event_queue.get()
