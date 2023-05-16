@@ -82,6 +82,15 @@ else
     SDC_AWS_SLACK_CHANNEL=""
 fi
 
+# If USER is not "", then perform an id -u and id -g and add each of them to the environment variables else make it empty
+if [ "$USER" != "" ]; then
+    USER_ID=$(id -u $USER)
+    GROUP_ID=$(id -g $USER)
+    USER="$USER_ID:$GROUP_ID"
+else
+    USER="$(id -u):$(id -g)"
+fi
+
 # If ALLOW_DELETE is true, then add it to the environment variables else make it empty
 if [ "$ALLOW_DELETE" = true ]; then
     SDC_AWS_ALLOW_DELETE="-a"
@@ -123,7 +132,7 @@ docker run -d \
     -v /etc/passwd:/etc/passwd \
     -v $DOWNLOAD_DIR:/download \
     -v ${HOME}/.aws/credentials:/s3watcher/.aws/credentials:ro \
-    -u `id -u`:`id -g` \
+    -u  $USER \
     $IMAGE_NAME
 # Print the docker logs
 echo "Docker logs"

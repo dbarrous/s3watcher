@@ -487,3 +487,28 @@ class SQSQueueHandler:
             return bucket_name.replace("/", "", 1), ""
 
         return bucket_name.split("/", 1)[0], bucket_name.split("/", 1)[-1]
+
+    # Get all of the keys in an S3 bucket and return them as a list also support pagination if required, use s3 client instead of s3t because s3t does not support pagination
+    def _get_s3_keys(self, bucket_name):
+        keys = []
+        start_time = time.time()
+        s3 = self.session.client("s3")
+        paginator = s3.get_paginator("list_objects_v2")
+        # If bucket name includes directories remove them from bucket_name and append to the file_key
+        if "/" in bucket_name:
+            bucket_name, folder = bucket_name.split("/", 1)
+            if folder != "" and folder[-1] != "/":
+                folder = f"{folder}/"
+        else:
+            folder = ""
+
+        operation_parameters = {"Bucket": bucket_name, "Prefix": folder}
+        page_iterator = paginator.paginate(**operation_parameters)
+
+        for page in page_iterator:
+            if "Contents" in page:
+                for obj in page["Contents"]:
+                    keys.append(f'/watch/{obj["Key"].replace(folder, "")}')
+        end_time = time.time()
+        log.info(f"Found {len(keys)} keys in {round(end_time - start_time, 2)} seconds")
+        return keys
