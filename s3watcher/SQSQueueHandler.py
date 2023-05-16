@@ -3,7 +3,7 @@ import time
 import polling
 import json
 import boto3
-import boto3.s3.transfer as s3transfer
+from boto3.s3.transfer import TransferConfig, S3Transfer
 import botocore
 import datetime
 from multiprocessing import Process, Queue
@@ -77,11 +77,11 @@ class SQSQueueHandler:
             # Initialize S3 Transfer Manager with concurrency limit
             botocore_config = botocore.config.Config(max_pool_connections=10)
             s3client = self.session.client("s3", config=botocore_config)
-            transfer_config = s3transfer.TransferConfig(
+            transfer_config = TransferConfig(
                 use_threads=True,
                 max_concurrency=10,
             )
-            self.s3t = s3transfer.create_transfer_manager(s3client, transfer_config)
+            self.s3t = S3Transfer(s3client, transfer_config)
 
         except self.s3.exceptions.ClientError:
             log.error(f"Error getting bucket ({self.bucket_name})")
@@ -257,8 +257,17 @@ class SQSQueueHandler:
                     self.download_path + "/".join(file_key_split[: i + 1])
                 )
 
+            def download_completed(bytes_transferred):
+                print(f"Downloaded {bytes_transferred} bytes")
+                print("Download completed")
+
             # Download file from S3
-            self.s3t.download(self.bucket_name, file_key, self.download_path + file_key)
+            self.s3t.download_file(
+                self.bucket_name,
+                file_key,
+                self.download_path + file_key,
+                callback=download_completed,
+            )
 
             # Change file permissions
             os.chown(self.download_path + file_key, 1001, 1001)
