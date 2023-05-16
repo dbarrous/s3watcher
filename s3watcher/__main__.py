@@ -1,7 +1,7 @@
 """
 Main File for the AWS File System Watcher
 """
-
+import os
 from s3watcher.SQSQueueHandler import SQSQueueHandler
 from s3watcher.SQSQueueHandlerConfig import get_config
 
@@ -20,7 +20,8 @@ def main() -> None:
     )
 
     # Set-up the Queue Handler
-    queue_handler.setup()
+    if os.getenv("AWS_SDC_SETUP"):
+        queue_handler.setup()
 
     # Start the Queue Handler
     queue_handler.start()

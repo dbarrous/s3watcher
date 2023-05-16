@@ -39,6 +39,8 @@ class SQSQueueHandler:
             else boto3.session.Session(region=os.getenv("AWS_REGION"))
         )
 
+        self.sqs = self.session.resource("sqs")
+
         # Set queue name
         self.queue_name = config.queue_name
 
@@ -57,7 +59,6 @@ class SQSQueueHandler:
         try:
             # Create S3 client
             self.s3 = self.session.client("s3")
-            self.sqs = self.session.resource("sqs")
 
             self.bucket_name, self.folder = self.extract_folder_from_bucket_name(
                 config.bucket_name
