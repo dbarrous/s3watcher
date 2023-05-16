@@ -85,11 +85,9 @@ fi
 
 # If USER is not "", then perform an id -u and id -g and add each of them to the environment variables else make it empty
 if [ "$USER" != "" ]; then
-    USER_ID=$(id -u $USER)
-    GROUP_ID=$(id -g $USER)
-    SDC_AWS_USER="$USER_ID:$GROUP_ID"
+    SDC_AWS_USER=$(id -u $USER):$(id -g $USER)
 else
-    SDC_AWS_USER="$(id -u):$(id -g)"
+    SDC_AWS_USER=$(id -u):$(id -g)
 fi
 
 # If ALLOW_DELETE is true, then add it to the environment variables else make it empty
@@ -119,7 +117,7 @@ echo "BACKTRACK_DATE: $BACKTRACK_DATE"
 echo "USE_FALLBACK: $USE_FALLBACK"
 
 
-sudo docker run -d \
+docker run -d \
     --restart=always \
     --name=$CONTAINER_NAME \
     -e SDC_AWS_S3_BUCKET="$SDC_AWS_S3_BUCKET" \
