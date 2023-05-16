@@ -212,7 +212,7 @@ class SQSQueueHandler:
                     if self.folder not in [None, ""]:
                         prefix = f"{self.folder}/"
                     else:
-                        prefix = None
+                        prefix = ""
                     page_iterator = paginator.paginate(
                         Bucket=self.bucket_name, Prefix=prefix
                     )
