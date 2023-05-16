@@ -313,7 +313,7 @@ class SQSQueueHandler:
             polling.poll(
                 lambda: self.get_messages(),
                 poll_forever=True,
-                step=1,
+                step=0.25,
                 check_success=lambda x: x is not None,
                 exception_handler=lambda x: log.error(
                     f"Error polling for messages on queue ({self.queue_name}): {x}"
