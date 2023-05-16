@@ -262,6 +262,9 @@ class SQSQueueHandler:
                 log.info(
                     f"Keys to download ({self.bucket_name}): {len(keys_to_download)}"
                 )
+                log.info(
+                    f"First 10 keys to download ({self.bucket_name}): {keys_to_download[:10]}"
+                )
                 for key in keys_to_download:
                     # Download file from S3 Async
                     with concurrent.futures.ThreadPoolExecutor() as executor:
