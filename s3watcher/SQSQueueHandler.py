@@ -216,7 +216,12 @@ class SQSQueueHandler:
                     for page in page_iterator:
                         if "Contents" in page:
                             for key in page["Contents"]:
-                                keys.append(key["Key"])
+                                # remove the first /folder/ from the key
+                                key["Key"] = key["Key"].replace(
+                                    f"{self.folder}/", "", 1
+                                )
+                                if key["Key"] != "":
+                                    keys.append(key["Key"])
 
                 except Exception as e:
                     log.error(
