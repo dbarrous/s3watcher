@@ -226,7 +226,16 @@ class SQSQueueHandler:
 
                 # log all keys
                 log.info(f"Keys in bucket ({self.bucket_name}): {len(keys)}")
-                log.info(f"Keys in download path ({self.download_path}): {len(keys)}")
+                # log first 10 keys
+                log.info(f"First 10 keys in bucket ({self.bucket_name}): {keys[:10]}")
+                log.info(
+                    f"Keys in download path ({self.download_path}): {len(downloaded_keys)}"
+                )
+                # log first 10 keys
+                log.info(
+                    f"First 10 keys in download path ({self.download_path}): {downloaded_keys[:10]}"
+                )
+
                 log.info(
                     f"Keys to download ({self.bucket_name}): {len(keys_to_download)}"
                 )
